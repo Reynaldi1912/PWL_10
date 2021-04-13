@@ -34,6 +34,7 @@
     @endif
 </table>
 <div class="row justify-content-end">
+    <a href="{{ route('users.cetak_pdf', $mahasiswa->mahasiswa->nim) }}" class="btn btn-secondary">Cetak</a>
     <a href="{{ route('mahasiswa.index') }}" class="btn btn-danger">Kembali</a>
 </div>
 @endsection
