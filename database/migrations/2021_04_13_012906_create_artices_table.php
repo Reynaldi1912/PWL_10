@@ -15,6 +15,9 @@ class CreateArticesTable extends Migration
     {
         Schema::create('artices', function (Blueprint $table) {
             $table->id();
+            $table->string('title');
+            $table->text('content');
+            $table->string('feature_image');
             $table->timestamps();
         });
     }
