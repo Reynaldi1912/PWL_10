@@ -7,6 +7,7 @@ use App\Models\Nilai;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use PDF;
 
 
 class MahasiswaController extends Controller
@@ -16,6 +17,17 @@ class MahasiswaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function cetak_pdf($nim){
+        $mahasiswa = Nilai::with('mahasiswa')
+            ->where('mahasiswa_id', $nim)
+            ->first();
+        $nilai = Nilai::with('matakuliah')
+            ->where('mahasiswa_id', $nim)
+            ->get();
+        $pdf = PDF::loadview('users.nilai', compact('mahasiswa', 'nilai'));
+        return $pdf->stream();
+    }
+
     public function index(Request $request)
     {
         // $mahasiswa = Mahasiswa::where([
