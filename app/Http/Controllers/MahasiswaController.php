@@ -6,6 +6,8 @@ use App\Models\Kelas;
 use App\Models\Nilai;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+
 
 class MahasiswaController extends Controller
 {
@@ -36,6 +38,7 @@ class MahasiswaController extends Controller
 
     }
 
+
     /**
      * Show the form for creating a new resource.
      *
@@ -63,11 +66,21 @@ class MahasiswaController extends Controller
             'Jurusan' => 'required',
             ]);
 
+            if($request->file('image')){
+                $image_name = $request->file('image')->store('images', 'public');
+            } else {
+                $image_name = 'images/user.png';
+            }
+            // Mahasiswa::create([
+            //     'image' => $image_name,
+            // ]);
+
             $mahasiswa  = New Mahasiswa;
             $mahasiswa->nim = $request->get('Nim');
             $mahasiswa->nama = $request->get('Nama');
             $mahasiswa->jurusan = $request->get('Jurusan');
             $mahasiswa->kelas_id = $request->get('Kelas_Id');
+            $mahasiswa->image = $image_name;
             $mahasiswa->save();
    
             // $kelas = new Kelas;
@@ -123,14 +136,25 @@ class MahasiswaController extends Controller
          $request->validate([
          'Nim' => 'required',
          'Nama' => 'required',
+         'image' => 'required',
          'Kelas' => 'required',
          'Jurusan' => 'required',
          ]);
-         $mahasiswa  = Mahasiswa::with('kelas')->where('nim',$nim)->first();
+         $mahasiswa = Mahasiswa::find($nim);
+         if($request->file('image')){
+            if($mahasiswa->image != 'images/user.png' && file_exists(storage_path('app/public/' . $mahasiswa->image))){
+                Storage::delete('public/' . $mahasiswa->image);
+            }
+            $image_name = $request->file('image')->store('images', 'public');
+            $mahasiswa->image = $image_name;
+        }
+
+        //  $mahasiswa  = Mahasiswa::with('kelas')->where('nim',$nim)->first();
          $mahasiswa->nim = $request->get('Nim');
          $mahasiswa->nama = $request->get('Nama');
          $mahasiswa->jurusan = $request->get('Jurusan');
-         $mahasiswa->save();
+
+        $mahasiswa->save();
 
          $kelas = new Kelas;
          $kelas->id = $request->get('Kelas');
